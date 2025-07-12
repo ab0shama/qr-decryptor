@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Decryptor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; background-color: #f0f2f5; padding: 40px; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
+    textarea, button { width: 100%; padding: 12px; margin: 10px 0; font-size: 16px; }
+    .result { background: #eef; padding: 15px; border-radius: 5px; word-break: break-word; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>QR Decryptor (🔐 Key is hidden)</h2>
+    <textarea id="encryptedInput" rows="5" placeholder="Paste encrypted QR data..."></textarea>
+    <button onclick="decrypt()">🔓 Decrypt</button>
+    <h3>Decrypted Output:</h3>
+    <div class="result" id="result">Result will appear here...</div>
+  </div>
+
+  <script>
+    // 🔐 Secret key (same as in VBA, must match exactly)
+    const secretKey = "@Stay))ut((@"; // <-- Change this before publishing
+
+    function base64ToBytes(base64) {
+      const binary = atob(base64);
+      return Array.from(binary, c => c.charCodeAt(0));
+    }
+
+    function decrypt() {
+      const base64 = document.getElementById("encryptedInput").value.trim();
+      const resultDiv = document.getElementById("result");
+
+      if (!base64) {
+        resultDiv.textContent = "Please paste encrypted text.";
+        return;
+      }
+
+      try {
+        const bytes = base64ToBytes(base64);
+        let decrypted = "";
+        for (let i = 0; i < bytes.length; i++) {
+          decrypted += String.fromCharCode(bytes[i] ^ secretKey.charCodeAt(i % secretKey.length));
+        }
+        resultDiv.textContent = decrypted;
+      } catch (err) {
+        resultDiv.textContent = "Error: Invalid input or internal error.";
+      }
+    }
+  </script>
+</body>
+</html>
