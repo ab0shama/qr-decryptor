@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <title>QR Decryptor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: sans-serif; background-color: #f0f2f5; padding: 40px; }
+    body { font-family: sans-serif; background-color: #f0f2f5; padding: 40px; direction: rtl; }
     .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
     textarea, button { width: 100%; padding: 12px; margin: 10px 0; font-size: 16px; }
     .result { background: #eef; padding: 15px; border-radius: 5px; word-break: break-word; }
@@ -13,20 +13,19 @@
 </head>
 <body>
   <div class="container">
-    <h2>QR Decryptor (🔐 Key is hidden)</h2>
-    <textarea id="encryptedInput" rows="5" placeholder="Paste encrypted QR data..."></textarea>
-    <button onclick="decrypt()">🔓 Decrypt</button>
-    <h3>Decrypted Output:</h3>
-    <div class="result" id="result">Result will appear here...</div>
+    <h2>🔐 أداة فك تشفير QR</h2>
+    <textarea id="encryptedInput" rows="5" placeholder="ألصق النص المشفر هنا..."></textarea>
+    <button onclick="decrypt()">🔓 فك التشفير</button>
+    <h3>الناتج:</h3>
+    <div class="result" id="result">سيظهر الناتج هنا...</div>
   </div>
 
   <script>
-    // 🔐 Secret key (same as in VBA, must match exactly)
-    const secretKey = "@Stay))ut((@"; // <-- Change this before publishing
+    const secretKey = "@Stay))ut((@"; // Change before deployment
 
     function base64ToBytes(base64) {
       const binary = atob(base64);
-      return Array.from(binary, c => c.charCodeAt(0));
+      return new Uint8Array([...binary].map(c => c.charCodeAt(0)));
     }
 
     function decrypt() {
@@ -34,19 +33,18 @@
       const resultDiv = document.getElementById("result");
 
       if (!base64) {
-        resultDiv.textContent = "Please paste encrypted text.";
+        resultDiv.textContent = "يرجى إدخال النص المشفر.";
         return;
       }
 
       try {
-        const bytes = base64ToBytes(base64);
-        let decrypted = "";
-        for (let i = 0; i < bytes.length; i++) {
-          decrypted += String.fromCharCode(bytes[i] ^ secretKey.charCodeAt(i % secretKey.length));
-        }
-        resultDiv.textContent = decrypted;
+        const encryptedBytes = base64ToBytes(base64);
+        const decryptedBytes = encryptedBytes.map((b, i) => b ^ secretKey.charCodeAt(i % secretKey.length));
+        const decoder = new TextDecoder("utf-8");
+        const decryptedText = decoder.decode(new Uint8Array(decryptedBytes));
+        resultDiv.textContent = decryptedText;
       } catch (err) {
-        resultDiv.textContent = "Error: Invalid input or internal error.";
+        resultDiv.textContent = "حدث خطأ أثناء فك التشفير.";
       }
     }
   </script>
